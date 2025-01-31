@@ -1,98 +1,103 @@
 import gurobipy as gp
 from gurobipy import GRB
-from pyomo.environ import *
-from pulp import LpMinimize, LpProblem, LpVariable, lpSum
-from gekko import GEKKO
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from pyomo.environ import *
+from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpBinary
+from gekko import GEKKO
+import time
 
-# Problem Parameters
-jobs = {
-    "pr1,2": [(1, 3), (2, 4), (3, 5), (4, 5)],
-    "pr2,2": [(1, 5), (2, 4), (3, 6), (4, 4)],
-    "pr3,2": [(2, 3), (3, 8), (4, 5), (5, 7)],
-    "pr4,2": [(3, 7), (4, 7), (5, 8), (6, 7)],
-    "pr5,1": [(1, 3), (2, 5), (3, 6)],
-    "pr6,3": [(1, 2), (3, 4), (4, 5)],
-    "pr7,2": [(3, 5), (4, 8), (5, 6)],
-    "pr8,1": [(2, 6), (4, 5), (5, 8)]
-}
+# Define data from the provided process plan
+jobs = [
+    [(1, 3), (2, 4), (3, 5), (4, 5)],  # Job 1
+    [(1, 3, 5), (4, 8), (4, 6), (4, 7)],  # Job 2
+    [(2, 3, 8), (4, 8), (3, 5, 7), (4, 6)],  # Job 3
+    [(1, 3, 5), (2, 8), (3, 4, 6, 7), (5, 6, 8)],  # Job 4
+    [(1,), (2, 4), (3, 8), (5, 6, 8)],  # Job 5
+    [(1, 2, 3), (4, 5), (3, 6)],  # Job 6
+    [(3, 5, 6), (4, 7, 8), (1, 3, 4, 5), (4, 6, 8)],  # Job 7
+    [(1, 2, 6), (4, 5, 8), (3, 7), (4, 6)]  # Job 8
+]
 
-machines = {1, 2, 3, 4, 5, 6, 7, 8}  # Set of machines
+processing_times = [
+    [(4, 5), (4, 5), (5, 6), (5, 5, 4, 5, 9)],
+    [(1, 5, 7), (5, 4), (1, 6), (4, 4, 7)],
+    [(7, 6, 8), (7, 7), (7, 8, 7), (7, 8)],
+    [(4, 3, 7), (4, 4), (4, 5, 6, 7), (3, 5, 5)],
+    [(3,), (4, 5), (4, 4), (3, 3, 3)],
+    [(3, 5, 6), (7, 8), (9, 8)],
+    [(4, 5, 4), (4, 6, 4), (3, 3, 3, 4, 5), (4, 6, 5)],
+    [(3, 4, 4), (6, 5, 4), (4, 5), (4, 6)]
+]
 
-# Gurobi Model
-def solve_gurobi():
-    model = gp.Model("FJSP")
-    S = model.addVars(jobs.keys(), range(4), vtype=GRB.CONTINUOUS, name="Start")
-    C = model.addVars(jobs.keys(), range(4), vtype=GRB.CONTINUOUS, name="Completion")
-    X = model.addVars(jobs.keys(), range(4), machines, vtype=GRB.BINARY, name="MachineSelection")
-    
-    for j, ops in jobs.items():
-        for o, (m, p) in enumerate(ops):
-            model.addConstr(gp.quicksum(X[j, o, k] for k in machines) == 1)
-            model.addConstr(C[j, o] == S[j, o] + gp.quicksum(p * X[j, o, k] for k in machines))
-            if o > 0:
-                model.addConstr(S[j, o] >= C[j, o - 1])
-    
-    model.setObjective(gp.quicksum(C[j, len(ops)-1] for j, ops in jobs.items()), GRB.MINIMIZE)
-    model.optimize()
-    return model
+num_jobs = len(jobs)
+num_machines = 8
 
-# Pyomo Model
-def solve_pyomo():
-    model = ConcreteModel()
-    model.S = Var(jobs.keys(), range(4), domain=NonNegativeReals)
-    model.C = Var(jobs.keys(), range(4), domain=NonNegativeReals)
-    model.X = Var(jobs.keys(), range(4), machines, domain=Binary)
-    
-    def obj_rule(m):
-        return sum(m.C[j, len(ops)-1] for j, ops in jobs.items())
-    
-    model.obj = Objective(rule=obj_rule, sense=minimize)
-    solver = SolverFactory('glpk')
-    solver.solve(model)
-    return model
+# Solver Performance Tracking
+times = {}
 
-# PuLP Model
-def solve_pulp():
-    model = LpProblem("FJSP", LpMinimize)
-    S = { (j, o): LpVariable(f"S_{j}_{o}", lowBound=0) for j in jobs for o in range(4) }
-    C = { (j, o): LpVariable(f"C_{j}_{o}", lowBound=0) for j in jobs for o in range(4) }
-    X = { (j, o, k): LpVariable(f"X_{j}_{o}_{k}", cat="Binary") for j in jobs for o in range(4) for k in machines }
-    
-    model += lpSum(C[j, len(ops)-1] for j, ops in jobs.items())
-    solver = PULP_CBC_CMD()
-    model.solve(solver)
-    return model
+### Gurobi Implementation ###
+start_time = time.time()
+model = gp.Model("FJSP")
 
-# GEKKO Model
-def solve_gekko():
-    m = GEKKO(remote=False)
-    S = m.Array(m.Var, (len(jobs), 4), lb=0)
-    C = m.Array(m.Var, (len(jobs), 4), lb=0)
-    X = m.Array(m.Var, (len(jobs), 4, len(machines)), lb=0, ub=1, integer=True)
-    
-    m.Obj(sum(C[j][len(ops)-1] for j, ops in enumerate(jobs.values())))
-    m.solve(disp=False)
-    return m
+x = model.addVars(num_jobs, num_machines, vtype=GRB.BINARY, name="x")
+c = model.addVar(vtype=GRB.CONTINUOUS, name="makespan")
 
-# Gantt Chart Visualization
-def plot_gantt(schedule):
-    fig, ax = plt.subplots()
-    colors = plt.cm.tab10(np.linspace(0, 1, len(jobs)))
-    for j, ops in schedule.items():
-        for o, (m, start, end) in enumerate(ops):
-            ax.barh(m, end - start, left=start, color=colors[o % len(colors)], edgecolor='black')
-    plt.xlabel("Time")
-    plt.ylabel("Machines")
-    plt.title("FJSP Gantt Chart")
-    plt.show()
+for j in range(num_jobs):
+    for o, machines in enumerate(jobs[j]):
+        model.addConstr(gp.quicksum(x[j, m] for m in machines) == 1)
 
-# Run and Compare Solutions
-models = {
-    "Gurobi": solve_gurobi(),
-    "Pyomo": solve_pyomo(),
-    "PuLP": solve_pulp(),
-    "GEKKO": solve_gekko()
-}
-plot_gantt(models["Gurobi"])
+# Precedence constraints
+for j in range(num_jobs):
+    for o in range(len(jobs[j]) - 1):
+        model.addConstr(gp.quicksum(x[j, m] * processing_times[j][o][i] for i, m in enumerate(jobs[j][o]))
+                        <= gp.quicksum(x[j, m] * processing_times[j][o + 1][i] for i, m in enumerate(jobs[j][o + 1])))
+
+# Makespan constraints
+for j in range(num_jobs):
+    for o in range(len(jobs[j])):
+        model.addConstr(c >= gp.quicksum(x[j, m] * processing_times[j][o][i] for i, m in enumerate(jobs[j][o])))
+
+model.setObjective(c, GRB.MINIMIZE)
+model.optimize()
+times['Gurobi'] = time.time() - start_time
+
+### Pyomo Implementation ###
+start_time = time.time()
+pyomo_model = ConcreteModel()
+pyomo_model.x = Var(range(num_jobs), range(num_machines), within=Binary)
+pyomo_model.makespan = Var(within=NonNegativeReals)
+
+# Objective function
+pyomo_model.obj = Objective(expr=pyomo_model.makespan, sense=minimize)
+solver = SolverFactory('glpk')
+solver.solve(pyomo_model)
+times['Pyomo'] = time.time() - start_time
+
+### PuLP Implementation ###
+start_time = time.time()
+pulp_model = LpProblem("FJSP", LpMinimize)
+x_pulp = LpVariable.dicts("x", (range(num_jobs), range(num_machines)), 0, 1, LpBinary)
+makespan_pulp = LpVariable("makespan", lowBound=0)
+
+pulp_model += makespan_pulp
+pulp_solver = pulp.PULP_CBC_CMD()
+pulp_model.solve(pulp_solver)
+times['PuLP'] = time.time() - start_time
+
+### Gekko Implementation ###
+start_time = time.time()
+gekko_model = GEKKO(remote=False)
+x_gekko = gekko_model.Array(gekko_model.Var, (num_jobs, num_machines), integer=True, lb=0, ub=1)
+makespan_gekko = gekko_model.Var(lb=0)
+gekko_model.Obj(makespan_gekko)
+gekko_model.solve(disp=False)
+times['Gekko'] = time.time() - start_time
+
+# Plot Performance Comparison
+plt.figure(figsize=(8, 5))
+plt.bar(times.keys(), times.values(), color=['blue', 'red', 'green', 'purple'])
+plt.title("Solver Performance Comparison")
+plt.xlabel("Solvers")
+plt.ylabel("Time (seconds)")
+plt.show()
