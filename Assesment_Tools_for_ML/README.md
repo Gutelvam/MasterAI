@@ -118,9 +118,9 @@ Generated plots:
 
 | Solver | Makespan | Solve Time (s) | Optimality Gap |
 |--------|----------|----------------|----------------|
-| Gurobi | 57       | 12.4           | 0%             |
-| CPLEX  | 59       | 18.7           | 0%             |
-| SCIP   | 63       | 42.1           | 2.3%           |
+| Gurobi | 32       | 5.3          | 0%             |
+| CPLEX  | 32       | 7.6         | 0%             |
+| SCIP   | 32       | 62.1           | 2.3%           |
 
 ### Key Observations
 - Commercial solvers (Gurobi/CPLEX) show better performance.
