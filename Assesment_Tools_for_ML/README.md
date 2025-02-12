@@ -15,7 +15,7 @@
 
 ---
 
-## Problem Description 📌
+## Problem Description 📌  <a name="problem-description"></a>
 
 ### Core Concept
 The Flexible Job Shop Scheduling Problem (FJSSP) extends classical job shop scheduling by:
@@ -41,14 +41,14 @@ The Flexible Job Shop Scheduling Problem (FJSSP) extends classical job shop sche
 
 ---
 
-## Mathematical Formulation 🧮
+## Mathematical Formulation 🧮 <a name="mathematical-formulation"></a>
 
 ### Decision Variables
 - **x<sub>i,j,m</sub>** ∈ {0,1}: Assignment of operation j of job i to machine m
 - **S<sub>i,j</sub>** ≥ 0: Start time of operation j of job i
 - **C<sub>max</sub>**: Makespan (maximum completion time)
 
-## Code Organization 📂
+## Code Organization 📂 <a name="code-organization"></a>
 
 ```Assesment_tools_for_ML/
 ├── data.py               # Problem instances and parameters
@@ -57,7 +57,7 @@ The Flexible Job Shop Scheduling Problem (FJSSP) extends classical job shop sche
 └── main.py               # Execution and comparison
 ```
 
-## Installation & Setup 💻
+## Installation & Setup 💻 <a name="installation--setup"></a>
 
 ### Requirements
 #### Python 3.8+
@@ -82,14 +82,14 @@ CPLEX_PATH = r"C:\Program Files\IBM\...\cplex.exe"
 SCIP_PATH = r"C:\Program Files\SCIP...\scip.exe"
 ```
 
-## Usage Instructions 🖥️
+## Usage Instructions 🖥️ <a name="usage-instructions"></a>
 
 ### Basic Execution
 ```bash
 python main.py
 ```
 
-### Expected Output
+### Expected Output 
 Console output with makespan results:
 ```
 === Gurobi Results ===
@@ -105,7 +105,7 @@ Generated plots:
 - `scip_schedule.png`
 - `solver_comparison.png`
 
-## Visualization Examples 📊
+## Visualization Examples 📊 <a name="visualization-examples"></a>
 
 ### Gantt Chart
 ![Gantt Chart](https://github.com/Gutelvam/MasterAI/blob/main/Assesment_Tools_for_ML/img/cplex_schedule.png?raw=true)
@@ -113,7 +113,7 @@ Generated plots:
 ### Solver Comparison
 ![Comparison](https://github.com/Gutelvam/MasterAI/blob/main/Assesment_Tools_for_ML/img/solve_comparison.png?raw=true)
 
-## Solver Performance 🏎️
+## Solver Performance 🏎️ <a name="solver-performance"></a>
 ### Benchmark Results (Sample Data)
 
 | Solver | Makespan | Solve Time (s) | Optimality Gap |
@@ -129,12 +129,12 @@ Generated plots:
   - Number of jobs.
   - Machine alternatives per operation.
 
-## References 📚
+## References 📚 <a name="references"></a>
 - Brucker, P., & Schlie, R. (1990). *Job-shop scheduling with multi-purpose machines*
 - Gurobi Optimization, LLC. (2023). *Mixed Integer Programming Basics*
 - Hart, W. et al. (2011). *Pyomo – Optimization Modeling in Python*
 
-## License 📄
+## License 📄 <a name="license"></a>
 **MIT License**
 
 Copyright (c) 2023 [Your Name]
