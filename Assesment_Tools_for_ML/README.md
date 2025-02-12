@@ -1,6 +1,6 @@
 # Flexible Job Shop Scheduling Problem (FJSSP) Solver
 
-![Schedule Example](https://mintsoftwaresystems.com/wp-content/uploads/MINT-Scheduling_Optimization_Chart.webp)
+![Schedule Example](https://www.quikallot.com/wp-content/uploads/2021/09/Field-Service-Scheduling-Software.png)
 
 ## Table of Contents
 1. [Problem Description](#problem-description)
@@ -111,7 +111,7 @@ Generated plots:
 ![Gantt Chart](https://github.com/Gutelvam/MasterAI/blob/main/Assesment_Tools_for_ML/img/cplex_schedule.png?raw=true)
 
 ### Solver Comparison
-![Comparison]([./img/solver_comparison.png](https://github.com/Gutelvam/MasterAI/blob/main/Assesment_Tools_for_ML/img/solve_comparison.png?raw=true))
+![Comparison](https://github.com/Gutelvam/MasterAI/blob/main/Assesment_Tools_for_ML/img/solve_comparison.png?raw=true)
 
 ## Solver Performance 🏎️
 ### Benchmark Results (Sample Data)
