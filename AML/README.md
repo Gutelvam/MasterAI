@@ -68,7 +68,7 @@ This project aims to maximize efficiency and versatility in data analysis, prepa
 
 1. **Clone the repository:**
     ```bash
-    git clone [https://github.com//AML.git](https://github.com/Gutelvam/MasterAI.git)
+    git clone https://github.com/Gutelvam/MasterAI.git
     cd AML
     ```
 
