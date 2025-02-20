@@ -42,7 +42,7 @@ The project directory is organized as follows:
 
 - **unsupervised.py**: Implements unsupervised learning techniques, such as clustering and dimensionality reduction, providing tools for discovering hidden structures and patterns in the data.
 
-- **AML_app.py, 1_Auto_ML_Preparation.py and  2_Auto_ML_Prediction.py are responsable to create the iterative front-end.
+- **AML_app.py, 1_Auto_ML_Preparation.py and  2_Auto_ML_Prediction.py are responsable to create the iterative front-end.**
 
 
 ## Goal Formulations
