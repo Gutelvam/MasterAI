@@ -83,6 +83,21 @@ This project aims to maximize efficiency and versatility in data analysis, prepa
     ```bash
     streamlit run AML_app.py
     ```
+4. **Home page with docummentation**
+    - Here you can find a good explanation about the project.
+        ![Homepage](img/homepage.png)
+
+5. **Data preparation and training**
+    - In this case you can chose among some options and settings before hiting the button to trigger the model training.
+        ![upload](img/pre_upload.png)
+        ![options](img/options.png)
+        ![opttions1](img/options1.png)
+        ![results](img/results.png)
+
+5. **Make Predictions**
+    - In this case you can upload a data that you want to predict without the target variable.
+        ![predictions](img/predictions.png)
+        ![predictions2](img/predictions2.png)
 
 ## Features
 
