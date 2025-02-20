@@ -89,7 +89,7 @@ This project aims to maximize efficiency and versatility in data analysis, prepa
 
 5. **Data preparation and training**
     - In this case you can chose among some options and settings before hiting the button to trigger the model training.
-        ![upload](img/pre_upload.png)
+        ![upload_data](img/pre_upload.png)
         ![options](img/options.png)
         ![opttions1](img/options1.png)
         ![results](img/results.png)
